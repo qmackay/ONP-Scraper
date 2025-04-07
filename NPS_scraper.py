@@ -16,19 +16,17 @@ import os
 
 # all specifications
 
-preferred_location = "Staircase"
+preferred_location = "X" #input X if no location
 
-preferred_date = '2025-02-02' #YEAR-MONTH-DAY format. Include leading zeros in months/days.
+preferred_date = '2025-04-10' #YEAR-MONTH-DAY format. Include leading zeros in months/days.
 
 preferred_people = 2
 
-permit_number = '4098362' #the permit number found on recreation.gov
+permit_number = '445859' #the permit number found on recreation.gov
 
 #example locations below, they need to match the listing exactly. Any number of permits requested will work here, as long as you list them all.
 permit_names = (
-                'Spike Camp',
-                'Lake Angeles (No Campfires)',
-                'Gladys Lake (No Campfires)'
+                'Aspen Valley'
                 )
 
 # Path to the GeckoDriver executable | this is if you want to run it locally, so unnecessary if on colab
@@ -69,13 +67,14 @@ def recgov():
 
     ######### click location button & wait for it to be present
 
-    WebDriverWait(driver, 20).until(
-        EC.presence_of_element_located((By.XPATH, "//button[span/span[contains(text(), '{}')]]".format(preferred_location)))
-    )
+    if preferred_location != "X":
+        WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.XPATH, "//button[span/span[contains(text(), '{}')]]".format(preferred_location)))
+        )
 
-    location_button = driver.find_element(By.XPATH, "//button[span/span[contains(text(), '{}')]]".format(preferred_location))
+        location_button = driver.find_element(By.XPATH, "//button[span/span[contains(text(), '{}')]]".format(preferred_location))
 
-    location_button.click()
+        location_button.click()
 
     ######### open dropdown and add people
 
@@ -124,13 +123,20 @@ def recgov():
 
     for i in range(len(permit_names)):
 
-        search_phrase_fail = '{} on {} - Unavailable'.format(permit_names[i], lengthy_date)
         search_phrase_success = '{} on {} - Available'.format(permit_names[i], lengthy_date)
-        if search_phrase_fail in page_source:
-            print(permit_names[i], 'is Unavailable on', lengthy_date)
+        search_phrase_fail = '{} on {} - Unavailable'.format(permit_names[i], lengthy_date)
+        search_phrase_walkup = '{} on {} - Walk-Up'.format(permit_names[i], lengthy_date)
+
         if search_phrase_success in page_source:
             print(permit_names[i], 'is Available on', lengthy_date)
             succ_storage[i] = '{} is now available on {}'.format(permit_names[i], lengthy_date)
+        elif search_phrase_walkup in page_source:
+            print(permit_names[i], 'is Walk-Up on', lengthy_date)
+        elif search_phrase_fail in page_source:
+            print(permit_names[i], 'is Unavailable on', lengthy_date)
+        else:
+            print(permit_names[i], 'has not been found. Is it spelled correctly?')
+            succ_storage[i] = '{} is not found on the list of permits. Is it spelled correctly?'.format(permit_names[i])
 
     driver.quit()
     return succ_storage
