@@ -16,17 +16,18 @@ import os
 
 # all specifications
 
-preferred_location = "X" #input X if no location
+preferred_location = "North Coast" #input X if no location
 
 preferred_date = '2025-04-10' #YEAR-MONTH-DAY format. Include leading zeros in months/days.
 
 preferred_people = 2
 
-permit_number = '445859' #the permit number found on recreation.gov
+permit_number = '4098362' #the permit number found on recreation.gov
 
 #example locations below, they need to match the listing exactly. Any number of permits requested will work here, as long as you list them all.
+# IF IT IS ONLY ONE PERMIT, MUST INCLUDE A COMMA AFTER
 permit_names = (
-                'Aspen Valley'
+                'Seafield Creek',
                 )
 
 # Path to the GeckoDriver executable | this is if you want to run it locally, so unnecessary if on colab
