@@ -1,4 +1,6 @@
-This scraper is only set up for Olympic National Park - Wilderness Permits. It should work for anything, but will require manual tweaking. I run it on Google Colab at 2 minute intervals. Can also run locally with a few modifications.
+This scraper is only set up for Olympic National Park - Wilderness Permits and Mt Rainier Wilderness Permits.
+
+The structure is here, so with a bit of know-how you could probably get it to work with most permits (I have had problems with Yosemite, though).
 
 This is one of my first ever projects - I only code out of necessity! Don't make fun of it!
 

@@ -1,0 +1,15 @@
+#Please read the readme before using this to make sure your formatting is correct, and know how to find the information.
+
+#permit information
+preferred_location="North Coast"
+preferred_date="2025-04-10"
+preferred_people="2"
+permit_number="4098362"
+search_interval ="60"
+
+#campsites you are looking for. 
+backcountry_campsites="Seafield Creek", "Yellow Banks"
+
+#email information. Do NOT share the below info with others, if sharing this file.
+your_email="quinn.mackay@gmail.com"
+app_password="qnud ykgz ujxb quus"

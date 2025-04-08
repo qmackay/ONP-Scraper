@@ -13,21 +13,28 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os
+import pandas as pd
 
-# all specifications
+# pulling data from text file and running it as python code to set variables
+with open("specifications.txt", "r") as file:
+    specs = file.read()
+    exec(specs)
 
-preferred_location = "North Coast" #input X if no location
+try: #make sure input is a integer for people.
+    preferred_people = int(preferred_people)
+except ValueError:
+    print("Error: Could not convert people to an integer. Check specifications.txt.")
 
-preferred_date = '2025-04-10' #YEAR-MONTH-DAY format. Include leading zeros in months/days.
+try: #make sure input is a integer for people.
+    search_interval = int(search_interval)
+except ValueError:
+    print("Error: Could not convert search interval to an integer. Check specifications.txt.")
 
-preferred_people = 2
-
-permit_number = '4098362' #the permit number found on recreation.gov
 
 #example locations below, they need to match the listing exactly. Any number of permits requested will work here, as long as you list them all.
 # IF IT IS ONLY ONE PERMIT, MUST INCLUDE A COMMA AFTER
 permit_names = (
-                'Seafield Creek',
+                backcountry_campsites,
                 )
 
 # Path to the GeckoDriver executable | this is if you want to run it locally, so unnecessary if on colab
@@ -42,11 +49,11 @@ elif os.name == 'posix':
 
 smtp_server = 'smtp.gmail.com'
 smtp_port = 587
-smtp_username = 'quinn.mackay@gmail.com'
-smtp_password = 'qnud ykgz ujxb quus' #this is an app password, different from normal google password
+smtp_username = your_email
+smtp_password = app_password #this is an app password, different from normal google password
 
-from_email = 'quinn.mackay@gmail.com' #typically same as smtp_username
-to_email = 'quinn.mackay@gmail.com' #can be same as sending email
+from_email = your_email #typically same as smtp_username
+to_email = your_email #can be same as sending email
 subject = 'Recreation Gov Scraper Update' #it will only send an update if a site is available
 
 def recgov():
@@ -68,7 +75,7 @@ def recgov():
 
     ######### click location button & wait for it to be present
 
-    if preferred_location != "X":
+    if preferred_location != "X": #this is to skip the location button for permits without one, none of the current permits have this issue, but it is here for future proofing.
         WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.XPATH, "//button[span/span[contains(text(), '{}')]]".format(preferred_location)))
         )
@@ -175,4 +182,4 @@ def email_send():
 while True: 
     succ_storage = recgov()
     email_send()
-    time.sleep(60)
+    time.sleep(search_interval)
