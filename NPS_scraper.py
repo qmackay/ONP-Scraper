@@ -33,9 +33,7 @@ except ValueError:
 
 #example locations below, they need to match the listing exactly. Any number of permits requested will work here, as long as you list them all.
 # IF IT IS ONLY ONE PERMIT, MUST INCLUDE A COMMA AFTER
-permit_names = (
-                backcountry_campsites,
-                )
+permit_names = backcountry_campsites
 
 # Path to the GeckoDriver executable | this is if you want to run it locally, so unnecessary if on colab
 os_system = os.name
@@ -70,7 +68,7 @@ def recgov():
     driver = webdriver.Firefox(service=service, options=headOption)
 
     #change this to the permit you want
-    url = "https://www.recreation.gov/permits/{}/registration/detailed-availability?date={}".format(permit_number, preferred_date)
+    url = "https://www.recreation.gov/permits/{}/registration/detailed-availability?date={}".format(permit_number, preferred_dates[0]) #only first date for search. problem: this program only works if the subsequent dates are within 10 days of the first date.
     driver.get(url)
 
     ######### click location button & wait for it to be present
@@ -99,10 +97,15 @@ def recgov():
 
     ######### remedy the date to correct format
 
-    date_object = datetime.strptime(preferred_date, '%Y-%m-%d')
+    lengthy_dates = [] #prepare the loop
+    n=0
+    for date in preferred_dates:
+        date_object = datetime.strptime(date, '%Y-%m-%d')
 
-    lengthy_date = date_object.strftime('%B %d, %Y')
-    lengthy_date = lengthy_date.replace(' 0', ' ')  # This removes the leading zero
+        interp_date = date_object.strftime('%B %d, %Y')
+        formatted_date = interp_date.replace(' 0', ' ')  # This removes the leading zero
+        lengthy_dates.append(formatted_date)
+        n+= 1 # increment i for the next date
 
     ######### scroll down to load everything
 
@@ -127,24 +130,29 @@ def recgov():
     page_source = driver.page_source
 
     time.sleep(1)
-    succ_storage = ["Blank"] * len(permit_names)
+    succ_storage = ["Blank"] * len(permit_names) * len(lengthy_dates) #create a blank array to store the results
 
-    for i in range(len(permit_names)):
+    n=0
+    for s in range(len(lengthy_dates)):
+        lengthy_date = lengthy_dates[s] #check one date at a time
+        print("checking availability for", lengthy_date)
+        for i in range(len(permit_names)):
 
-        search_phrase_success = '{} on {} - Available'.format(permit_names[i], lengthy_date)
-        search_phrase_fail = '{} on {} - Unavailable'.format(permit_names[i], lengthy_date)
-        search_phrase_walkup = '{} on {} - Walk-Up'.format(permit_names[i], lengthy_date)
+            search_phrase_success = '{} on {} - Available'.format(permit_names[i], lengthy_date)
+            search_phrase_fail = '{} on {} - Unavailable'.format(permit_names[i], lengthy_date)
+            search_phrase_walkup = '{} on {} - Walk-Up'.format(permit_names[i], lengthy_date)
 
-        if search_phrase_success in page_source:
-            print(permit_names[i], 'is Available on', lengthy_date)
-            succ_storage[i] = '{} is now available on {}'.format(permit_names[i], lengthy_date)
-        elif search_phrase_walkup in page_source:
-            print(permit_names[i], 'is Walk-Up on', lengthy_date)
-        elif search_phrase_fail in page_source:
-            print(permit_names[i], 'is Unavailable on', lengthy_date)
-        else:
-            print(permit_names[i], 'has not been found. Is it spelled correctly?')
-            succ_storage[i] = '{} is not found on the list of permits. Is it spelled correctly?'.format(permit_names[i])
+            if search_phrase_success in page_source:
+                print(permit_names[i], 'is Available on', lengthy_date)
+                succ_storage[n] = '{} is now available on {}'.format(permit_names[i], lengthy_date)
+            elif search_phrase_walkup in page_source:
+                print(permit_names[i], 'is Walk-Up on', lengthy_date)
+            elif search_phrase_fail in page_source:
+                print(permit_names[i], 'is Unavailable on', lengthy_date)
+            else:
+                print(permit_names[i], 'has not been found. Is it spelled correctly?')
+                succ_storage[n] = '{} is not found on the list of permits. Is it spelled correctly?'.format(permit_names[i])
+            n += 1 #increment n for the next permit name
 
     driver.quit()
     return succ_storage

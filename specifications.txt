@@ -2,7 +2,7 @@
 
 #permit information
 preferred_location="North Coast"
-preferred_date="2025-04-10"
+preferred_dates="2025-04-10", "2025-04-11"
 preferred_people="2"
 permit_number="4098362"
 search_interval ="60"
